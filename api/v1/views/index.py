@@ -14,14 +14,14 @@ from models.review import Review
 
 
 @app_views.route("/status", methods=["GET"])
-def status_rt():
+def status_api():
     """returns status route OK for GET method"""
     if request.method == "GET":
         return jsonify({"status": "OK"})
 
 
 @app_views.route("/stats", methods=["GET"])
-def stats_rt():
+def stats_get():
     """Retrieves the number of each objects by type"""
     if request.method == "GET":
         response = {
