@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 """ returns a JSON: 'status': 'OK """
+
+
 from api.v1.views import app_views
 from flask import jsonify, request
 from models import storage
