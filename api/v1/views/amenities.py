@@ -2,7 +2,7 @@
 """ view for Amenity objects that handles all default RESTFul API actions"""
 
 
-from flask import jsonify, abort, request
+from flask import abort, jsonify, make_response, request
 from models import storage
 from models.amenity import Amenity
 from api.v1.views import app_views
@@ -34,7 +34,7 @@ def delete_amenity(amenity_id):
         abort(404)
     storage.delete(amenity)
     storage.save()
-    return jsonify({}), 200
+    return make_response(jsonify({}), 200)
 
 
 @app_views.route("/amenities", methods=["POST"], strict_slashes=False)
@@ -42,26 +42,26 @@ def create_amenity():
     """Creates a Amenity object"""
     json_data = request.get_json()
     if not json_data:
-        return jsonify({"error": "Not a JSON"}), 400
+        abort(400, description="Not a JSON")
     if "name" not in json_data:
-        return jsonify({"error": "Missing name"}), 400
+        abort(400, description="Missing name")
     amenity = Amenity(**json_data)
     amenity.save()
-    return jsonify(amenity.to_dict()), 201
+    return make_response(jsonify(amenity.to_dict()), 201)
 
 
 @app_views.route("/amenities/<amenity_id>", methods=["PUT"],
                  strict_slashes=False)
 def update_amenity(amenity_id):
     """Updates a Amenity object"""
+    json_data = request.get_json()
+    if not json_data:
+        abort(400, description="Not a JSON")
     amenity = storage.get(Amenity, amenity_id)
     if not amenity:
         abort(404)
-    json_data = request.get_json()
-    if not json_data:
-        return jsonify({"error": "Not a JSON"}), 400
     for key, value in json_data.items():
         if key not in ["id", "created_at", "updated_at"]:
             setattr(amenity, key, value)
-    amenity.save()
-    return jsonify(amenity.to_dict()), 200
+    storage.save()
+    return make_response(jsonify(amenity.to_dict()), 200)
