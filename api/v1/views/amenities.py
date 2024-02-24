@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-""" view for Amenity objects that handles all default RESTFul API actions"""
+""" View for Amenity objects that handles all default RESTFul API actions"""
 
 
 from flask import abort, jsonify, make_response, request
@@ -10,7 +10,7 @@ from api.v1.views import app_views
 
 @app_views.route("/amenities", methods=["GET"], strict_slashes=False)
 def get_amenities():
-    """Retrieves the list of all Amenity objects"""
+    """func that retrieves the list of all Amenity objects"""
     amenities = storage.all(Amenity).values()
     return jsonify([amenity.to_dict() for amenity in amenities])
 
@@ -18,7 +18,7 @@ def get_amenities():
 @app_views.route("/amenities/<amenity_id>", methods=["GET"],
                  strict_slashes=False)
 def get_amenity(amenity_id):
-    """Retrieves a Amenity object"""
+    """func that retrieves a Amenity object"""
     amenity = storage.get(Amenity, amenity_id)
     if not amenity:
         abort(404)
@@ -28,7 +28,7 @@ def get_amenity(amenity_id):
 @app_views.route("/amenities/<amenity_id>", methods=["DELETE"],
                  strict_slashes=False)
 def delete_amenity(amenity_id):
-    """Deletes a Amenity object"""
+    """func that deletes a Amenity object"""
     amenity = storage.get(Amenity, amenity_id)
     if not amenity:
         abort(404)
@@ -39,13 +39,14 @@ def delete_amenity(amenity_id):
 
 @app_views.route("/amenities", methods=["POST"], strict_slashes=False)
 def create_amenity():
-    """Creates a Amenity object"""
+    """func that creates a Amenity object"""
     json_data = request.get_json()
     if not json_data:
         abort(400, description="Not a JSON")
     if "name" not in json_data:
         abort(400, description="Missing name")
     amenity = Amenity(**json_data)
+    storage.new(amenity)
     amenity.save()
     return make_response(jsonify(amenity.to_dict()), 201)
 
@@ -53,7 +54,7 @@ def create_amenity():
 @app_views.route("/amenities/<amenity_id>", methods=["PUT"],
                  strict_slashes=False)
 def update_amenity(amenity_id):
-    """Updates a Amenity object"""
+    """func that updates a Amenity object"""
     json_data = request.get_json()
     if not json_data:
         abort(400, description="Not a JSON")
